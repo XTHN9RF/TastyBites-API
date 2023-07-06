@@ -74,7 +74,7 @@ WSGI_APPLICATION = 'TastyBites_API.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "TB",
+        'NAME': "tb",
         'USER': "postgres",
         'PASSWORD': "password",
         'HOST': "localhost",
@@ -111,7 +111,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-AUTH_USER_MODEL = 'core.UserModel'
+AUTH_USER_MODEL = 'core.User'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
