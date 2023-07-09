@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
-CREATE_USER_URL = reverse('user:create')
+CREATE_USER_URL = reverse('user:create_user')
 
 
 def create_user(**kwargs):
