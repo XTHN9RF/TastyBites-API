@@ -11,6 +11,7 @@ from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse('user:create_user')
 LOGIN_USER_URL = reverse('user:login_user')
+MANAGE_USER_URL = reverse('user:manage_user')
 
 
 def create_user(**kwargs):
@@ -85,3 +86,47 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('token', res.data)
         self.assertIn('refresh_token', res.cookies)
+
+
+class PrivateUserApiTests(TestCase):
+    """Test cases for authenticated users features of the user API"""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user(
+            email='test@example.com',
+            password='testpassword1',
+            name='Test Name'
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        """ Test retrieving profile for logged in user """
+        res = self.client.get(MANAGE_USER_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {
+            'email': self.user.email,
+            'name': self.user.name
+        })
+
+    def test_post_not_allowed(self):
+        """ Test that POST is not allowed on the manage user url """
+        res = self.client.post(MANAGE_USER_URL, {})
+
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile(self):
+        """ Test updating the user profile for authenticated user """
+        payload = {
+            'name': 'New Name',
+            'password': 'newpassword1'
+        }
+
+        res = self.client.patch(MANAGE_USER_URL, payload)
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.name, payload['name'])
+        self.assertTrue(self.user.check_password(payload['password']))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
