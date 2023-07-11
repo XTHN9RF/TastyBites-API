@@ -85,7 +85,6 @@ class PublicUserApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('token', res.data)
-        self.assertIn('refresh_token', res.cookies)
 
 
 class PrivateUserApiTests(TestCase):

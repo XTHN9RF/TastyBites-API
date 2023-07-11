@@ -4,3 +4,4 @@ flake8
 psycopg2
 drf-spectacular
 PyJWT
+drf-yasg
