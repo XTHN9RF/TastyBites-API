@@ -3,8 +3,10 @@ File contains all the views for the user app
 """
 
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import (status,
+                            generics)
 from rest_framework.views import APIView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 
 from . import serializers
@@ -100,3 +102,12 @@ class RefreshApiView(APIView):
         }
         response.status_code = status.HTTP_200_OK
         return response
+
+
+class ManageUserApiView(generics.RetrieveUpdateAPIView, LoginRequiredMixin):
+    """Handle updating and retrieving user profile"""
+    serializer_class = serializers.UserSerializer
+
+    def get_object(self):
+        """Retrieves and returns authenticated user object"""
+        return self.request.user
