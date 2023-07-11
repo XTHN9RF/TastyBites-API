@@ -4,7 +4,9 @@ URL configuration for user app
 
 from django.urls import path
 
-from .views import *
+from .views import (RegistrationApiView,
+                    LoginApiView,
+                    RefreshApiView)
 
 app_name = 'user'
 

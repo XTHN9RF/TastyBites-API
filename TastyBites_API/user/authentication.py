@@ -36,7 +36,8 @@ def decode_access_token(request):
         payload = jwt.decode(token, 'access_secret', algorithms=['HS256'])
         return payload['user_id']
     except jwt.ExpiredSignatureError:
-        return Response({'errorMessage': 'Unauthenticated, token has expired'}, status=401)
+        return Response({'errorMessage': 'Unauthenticated, token has expired'},  # noqa
+                        status=401)
 
 
 def decode_refresh_token(token):
@@ -44,7 +45,8 @@ def decode_refresh_token(token):
         payload = jwt.decode(token, 'refresh_secret', algorithms=['HS256'])
         return payload['user_id']
     except jwt.ExpiredSignatureError:
-        return Response({'errorMessage': 'Refresh token has expired, login again'}, status=401)
+        return Response({'errorMessage': 'Refresh token has expired, login again'},  # noqa
+                        status=401)
 
 
 def is_token_valid(request):
