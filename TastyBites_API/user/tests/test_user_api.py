@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse('user:create_user')
+LOGIN_USER_URL = reverse('user:login_user')
 
 
 def create_user(**kwargs):
@@ -62,3 +63,25 @@ class PublicUserApiTests(TestCase):
             email=payload['email']
         ).exists()
         self.assertFalse(user_exists)
+
+    def test_token_created(self):
+        """ Test that tokens are created when user is created """
+        user_credentials = {
+            'email': 'test@example.com',
+            'password': 'testpassword1',
+            'name': 'Test Name'
+        }
+        create_user(**user_credentials)
+
+        payload = {
+            'email': 'test@example.com',
+            'password': 'testpassword1',
+        }
+
+        res = self.client.post(LOGIN_USER_URL, user_credentials)
+
+        user = get_user_model().objects.get(email=user_credentials['email'])
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('token', res.data)
+        self.assertIn('refresh_token', res.cookies)
