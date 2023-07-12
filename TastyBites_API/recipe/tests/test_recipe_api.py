@@ -44,6 +44,11 @@ def create_recipe(user, **params):
     return recipe
 
 
+def create_user(**params):
+    """Function that creates a user"""
+    return get_user_model().objects.create_user(**params)
+
+
 class PublicRecipeApiTest(TestCase):
     """Handles testing of public API features"""
 
@@ -61,11 +66,9 @@ class PublicRecipeApiTest(TestCase):
 class PrivateRecipeApiTest(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = get_user_model().objects.create_user(
-            email='user@example.com',
-            password='testpassword1',
-            name='Test User'
-        )
+        self.user = create_user(email='user@example.com',
+                                password='testpassword1',
+                                name='Test User')
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recipes(self):
@@ -81,7 +84,7 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_limiting_recipes_to_user(self):
-        second_user = get_user_model().objects.create_user(
+        second_user = create_user(
             email='user2@example.com',
             password='testpassword2',
             name='Second User'
