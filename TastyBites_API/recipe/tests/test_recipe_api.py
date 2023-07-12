@@ -33,7 +33,7 @@ def create_recipe(user, **params):
     defaults = {
         'title': 'Sample Recipe',
         'time_minutes': 10,
-        'price': 5.00,
+        'price': Decimal('5.00'),
         'description': 'Sample Description',
         'link': 'http://example.com/recipe.pdf'
     }
@@ -114,7 +114,7 @@ class PrivateRecipeApiTest(TestCase):
         payload = {
             'title': 'Sample Recipe',
             'time_minutes': 10,
-            'price': 5.00,
+            'price': Decimal('5.00'),
             'description': 'Sample Description',
             'link': 'http://example.com/recipe.pdf'
         }
@@ -124,6 +124,51 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
         recipe = Recipe.objects.get(id=res.data['id'])
+
+        for key in payload.keys():
+            self.assertEqual(payload[key], getattr(recipe, key))
+        self.assertEqual(recipe.user, self.user)
+
+    def test_partial_update(self):
+        original_link = 'http://example.com/recipe.pdf'
+        recipe = create_recipe(user=self.user, link=original_link, title='Sample Title')
+
+        payload = {'title': 'Updated Title'}
+        url = generate_detail_url(recipe.id)
+
+        res = self.client.patch(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        recipe.refresh_from_db()
+
+        self.assertEqual(recipe.title, payload['title'])
+        self.assertEqual(recipe.link, original_link)
+        self.assertEqual(recipe.user, self.user)
+
+    def test_full_update(self):
+        recipe = create_recipe(
+            user=self.user,
+            title='Sample Title',
+            link='http://example.com/some.pdf',
+            price=Decimal('5.85'),
+            time_minutes=2
+        )
+
+        payload = {
+            'title': 'Sample Recipe',
+            'time_minutes': 10,
+            'price': Decimal('5.00'),
+            'description': 'Sample Description',
+            'link': 'http://example.com/recipe.pdf'
+        }
+
+        url = generate_detail_url(recipe.id)
+
+        res = self.client.put(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        recipe.refresh_from_db()
 
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(recipe, key))
