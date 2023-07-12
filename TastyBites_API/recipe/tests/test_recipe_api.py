@@ -72,6 +72,7 @@ class PrivateRecipeApiTest(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recipes(self):
+        """Test retrieving list of recipes"""
         create_recipe(user=self.user)
         create_recipe(user=self.user)
 
@@ -84,6 +85,7 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_limiting_recipes_to_user(self):
+        """Test that recipes returned are for authenticated user"""
         second_user = create_user(
             email='user2@example.com',
             password='testpassword2',
@@ -101,6 +103,7 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(len(res.data), 1)
 
     def test_retrieve_recipe_detail(self):
+        """Test retrieving a recipe detail"""
         recipe = create_recipe(user=self.user)
 
         url = generate_detail_url(recipe.id)
@@ -111,6 +114,7 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_create_recipe(self):
+        """Test creating a recipe feature"""
         payload = {
             'title': 'Sample Recipe',
             'time_minutes': 10,
@@ -130,6 +134,7 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(recipe.user, self.user)
 
     def test_partial_update(self):
+        """Test partial updating of recipe"""
         original_link = 'http://example.com/recipe.pdf'
         recipe = create_recipe(user=self.user, link=original_link, title='Sample Title')
 
@@ -146,6 +151,7 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(recipe.user, self.user)
 
     def test_full_update(self):
+        """Testing full update of recipe"""
         recipe = create_recipe(
             user=self.user,
             title='Sample Title',
@@ -193,6 +199,7 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(recipe.user, self.user)
 
     def test_delete_recipe(self):
+        """Test that user can delete recipe"""
         recipe = create_recipe(user=self.user)
         url = generate_detail_url(recipe.id)
 
