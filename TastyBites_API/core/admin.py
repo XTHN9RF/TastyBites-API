@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy
 
-from .models import User
+from .models import User, Recipe
 
 
 class CustomUserAdmin(UserAdmin):
@@ -26,3 +26,7 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.site_header = 'TastyBites Admin'
+admin.site.site_title = 'TastyBites Admin'
+admin.site.index_title = 'TastyBites Admin'
+admin.site.register(Recipe)
